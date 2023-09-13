@@ -1,5 +1,8 @@
 #include <iostream>
 #include <random>
+#include <queue>
+#include <thread>
+#include <future>
 #include "TrafficLight.h"
 
 /* Implementation of class "MessageQueue" */
@@ -85,7 +88,12 @@ void TrafficLight::cycleThroughPhases()
             }
         }
 
-        _trafficMessages->MessageQueue::send(std::move(_currentPhase));
+        //_trafficMessages->send(std::move(_currentPhase));
+        /*
+        auto tempPhase = _currentPhase;
+        auto future = std::async(std::launch::async, &MessageQueue<TrafficLightPhase>::send, _trafficMessages, std::move(tempPhase));
+        future.wait();
+        */
 
         auto startTime = std::chrono::system_clock::now();
         double r = (((double) rand() / (RAND_MAX))*2) + 4;
