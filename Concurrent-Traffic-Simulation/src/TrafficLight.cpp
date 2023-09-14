@@ -47,7 +47,7 @@ void TrafficLight::waitForGreen()
     // runs and repeatedly calls the receive function on the message queue. 
     // Once it receives TrafficLightPhase::green, the method returns.
     while (true) {
-        if(_trafficMessages->receive() == TrafficLightPhase::green) {
+        if(_trafficMessages.receive() == TrafficLightPhase::green) {
             return;
         }
     }
@@ -79,24 +79,32 @@ void TrafficLight::cycleThroughPhases()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         auto currentTime = std::chrono::system_clock::now();
         std::chrono::duration<double> diff = currentTime - startTime;
+        //std::cout << "r = " << r << std::endl;
+        //std::cout << "diff = " << diff.count() << std::endl;
         if(diff.count() > r) {
+            //std::cout << "GOT HERE" << std::endl;
             if(_currentPhase == red) {
                 _currentPhase = green;
             }
             else {
                 _currentPhase = red;
+                
             }
+            startTime = std::chrono::system_clock::now();
+            r = (((double) rand() / (RAND_MAX))*2) + 4;
+            _trafficMessages.send(std::move(_currentPhase));
         }
 
-        //_trafficMessages->send(std::move(_currentPhase));
+        
         /*
         auto tempPhase = _currentPhase;
         auto future = std::async(std::launch::async, &MessageQueue<TrafficLightPhase>::send, _trafficMessages, std::move(tempPhase));
         future.wait();
         */
 
-        auto startTime = std::chrono::system_clock::now();
-        double r = (((double) rand() / (RAND_MAX))*2) + 4;
+        
+        
+        
     }
 }
 
